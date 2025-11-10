@@ -1,0 +1,34 @@
+{
+  "name": "fastify-mysql-ts",
+  "version": "1.0.0",
+  "description": "Fastify with TypeScript and MySQL",
+  "main": "dist/app.js",
+  "scripts": {
+    "build": "tsc",
+    "dev": "ts-node-dev src/app.ts",
+    "start": "node dist/app.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "dependencies": {
+    "@fastify/cors": "^8.3.0",
+    "@fastify/helmet": "^11.1.1",
+    "@fastify/jwt": "^7.2.0",
+    "@fastify/multipart": "^8.0.0",
+    "@sinclair/typebox": "^0.34.41",
+    "ali-oss": "^6.17.1",
+    "bcrypt": "^5.1.0",
+    "dotenv": "^16.0.3",
+    "fastify": "^4.15.0",
+    "mysql2": "^3.2.3",
+    "uuid": "^9.0.0",
+    "zod": "^3.21.4"
+  },
+  "devDependencies": {
+    "@types/ali-oss": "^6.16.11",
+    "@types/bcrypt": "^5.0.0",
+    "@types/node": "^18.16.0",
+    "@types/uuid": "^9.0.1",
+    "ts-node-dev": "^2.0.0",
+    "typescript": "^5.0.4"
+  }
+}
