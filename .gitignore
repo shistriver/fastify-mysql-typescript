@@ -11,3 +11,4 @@ node_modules/
 .hbuilderx/launch.json
 .project.config.json
 .project.private.config.json
+.env
