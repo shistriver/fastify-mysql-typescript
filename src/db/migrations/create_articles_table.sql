@@ -1,0 +1,26 @@
+-- 创建文章表
+CREATE TABLE IF NOT EXISTS articles (
+  article_id BIGINT NOT NULL AUTO_INCREMENT COMMENT '文章ID（唯一标识）',
+  title VARCHAR(200) NOT NULL COMMENT '文章标题（如"Fastify框架入门指南"）',
+  subtitle VARCHAR(300) NULL DEFAULT NULL COMMENT '文章副标题（补充标题信息，可选）',
+  cover_image_url VARCHAR(500) NULL DEFAULT NULL COMMENT '封面图链接（用于列表展示，可选）',
+  content TEXT NOT NULL COMMENT '文章正文（支持富文本HTML或Markdown格式）',
+  summary TEXT NULL DEFAULT NULL COMMENT '文章摘要（列表页展示的简介，可选，不超过200字）',
+  author_id BIGINT NOT NULL COMMENT '作者ID（关联用户表users的user_id）',
+  status ENUM('draft', 'pending_review', 'published', 'rejected', 'archived') NOT NULL DEFAULT 'draft' COMMENT '状态：草稿/待审核/已发布/已驳回/已归档',
+  visibility ENUM('public', 'private', 'password_protected') NOT NULL DEFAULT 'public' COMMENT '可见性：公开/仅自己可见/密码保护',
+  is_featured TINYINT(1) NULL DEFAULT 0 COMMENT '是否推荐（1：是，0：否，推荐文章优先展示）',
+  view_count INT NOT NULL DEFAULT 0 COMMENT '阅读量（累计被查看的次数）',
+  like_count INT NOT NULL DEFAULT 0 COMMENT '点赞量（累计被点赞的次数）',
+  comment_count INT NOT NULL DEFAULT 0 COMMENT '评论数（累计评论的数量）',
+  publish_time DATETIME NULL DEFAULT NULL COMMENT '发布时间（status=published时必填）',
+  created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
+  updated_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '最后编辑时间',
+  point_threshold INT NOT NULL DEFAULT 0 COMMENT '下载资源所需积分（0表示免费）',
+  resource_url VARCHAR(500) NOT NULL COMMENT '下载资源地址',
+  download_point_threshold INT NOT NULL DEFAULT 0 COMMENT '下载文章所需积分（0表示免费）',
+  PRIMARY KEY (article_id),
+  INDEX idx_author_id (author_id) COMMENT '查询作者的所有文章',
+  INDEX idx_status_publish_time (status, publish_time) COMMENT '按状态+发布时间筛选（如查询"已发布且近7天的文章"）',
+  INDEX idx_is_featured (is_featured, status) COMMENT '查询推荐且已发布的文章'
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='文章主表';

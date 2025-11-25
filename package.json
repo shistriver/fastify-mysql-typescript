@@ -7,6 +7,10 @@
     "build": "tsc",
     "dev": "ts-node-dev src/app.ts",
     "start": "node dist/app.js",
+    "migrate:articles": "mysql -u root -p123456 share_resources < src/db/migrations/create_articles_table.sql",
+    "test:articles": "node test-article-api.js",
+    "test:articles:local": "API_BASE_URL=http://localhost:3000 node test-article-api.js",
+    "test:articles:custom": "node test-article-api.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "dependencies": {

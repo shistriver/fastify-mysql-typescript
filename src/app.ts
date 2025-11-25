@@ -10,6 +10,7 @@ import { memberRoutes } from './routes/member.routes';
 import { userRoutes } from './routes/user.routes';
 import { ossRoutes } from './routes/oss.routes';
 import { categoryRoutes } from './routes/category.routes';
+import { articleRoutes } from './routes/article.routes';
 import { config } from './config';
 import { processDates } from './utils/dateHelper';
 
@@ -66,6 +67,9 @@ app.register(ossRoutes, { prefix: '/oss' });
 
 // 注册分类相关路由
 app.register(categoryRoutes, { prefix: '/api/category' });
+
+// 注册文章相关路由
+app.register(articleRoutes, { prefix: '/api' });
 
 // 定义路由
 app.get('/', async (request: FastifyRequest, reply: FastifyReply) => {
