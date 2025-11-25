@@ -98,6 +98,35 @@ async function testArticleAPI() {
     const articleId = createResponse.data.data?.id || 1;
     console.log('创建的文章ID:', articleId, '\n');
 
+    // 1.1 测试title唯一性检查
+    console.log('1.1 测试title唯一性检查...');
+    const duplicateCreateResponse = await sendRequest({
+      path: '/articles',
+      method: 'POST'
+    }, {
+      title: '测试文章标题',  // 使用相同的标题
+      subtitle: '重复标题测试文章',
+      coverImageUrl: 'http://example.com/cover2.jpg',
+      content: '这是重复标题测试文章的内容。',
+      summary: '这是重复标题测试文章的摘要。',
+      authorId: 1,
+      status: 'draft',
+      visibility: 'public',
+      isFeatured: 0,
+      pointThreshold: 0,
+      resourceUrl: 'http://res.example.com/file2.zip',
+      downloadPointThreshold: 0,
+      downloadFileUrl: 'http://dl.example.com/file2.pdf'
+    });
+    
+    console.log('重复创建文章响应:', JSON.stringify(duplicateCreateResponse, null, 2));
+    
+    if (duplicateCreateResponse.status === 500 && duplicateCreateResponse.data?.message?.includes('文章标题已存在')) {
+      console.log('✓ Title唯一性检查正常工作\n');
+    } else {
+      console.log('⚠ Title唯一性检查可能存在问题\n');
+    }
+
     // 2. 获取所有文章
     console.log('2. 获取所有文章...');
     const getAllResponse = await sendRequest({

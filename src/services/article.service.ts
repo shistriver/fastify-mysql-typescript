@@ -6,6 +6,12 @@ export class ArticleService {
    * 创建文章
    */
   async createArticle(articleData: CreateArticleDto): Promise<ArticleResponse> {
+    // 检查标题是否已存在
+    const isTitleExists = await ArticleModel.isTitleExists(articleData.title);
+    if (isTitleExists) {
+      throw new Error('文章标题已存在');
+    }
+    
     const article = await ArticleModel.create(articleData);
     return this.toArticleResponse(article);
   }
@@ -38,6 +44,22 @@ export class ArticleService {
    * 更新文章
    */
   async updateArticle(id: number, articleData: UpdateArticleDto): Promise<ArticleResponse | null> {
+    // 如果提供了新的标题，检查是否与其他文章重复（排除自己）
+    if (articleData.title !== undefined) {
+      const existingArticle = await ArticleModel.findById(id);
+      if (!existingArticle) {
+        return null;
+      }
+      
+      // 只有当新标题与原标题不同时才检查唯一性
+      if (articleData.title !== existingArticle.title) {
+        const isTitleExists = await ArticleModel.isTitleExists(articleData.title);
+        if (isTitleExists) {
+          throw new Error('文章标题已存在');
+        }
+      }
+    }
+    
     const article = await ArticleModel.update(id, articleData);
     return article ? this.toArticleResponse(article) : null;
   }

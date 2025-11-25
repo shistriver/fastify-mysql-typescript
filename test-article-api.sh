@@ -68,6 +68,37 @@ fi
 echo "创建的文章ID: $ARTICLE_ID"
 echo ""
 
+# 1.1 测试title唯一性检查
+echo "1.1 测试title唯一性检查..."
+DUPLICATE_CREATE_RESPONSE=$(curl -s -X POST "$BASE_URL$API_PREFIX/articles" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "title": "测试文章标题",
+    "subtitle": "重复标题测试文章",
+    "coverImageUrl": "http://example.com/cover2.jpg",
+    "content": "这是重复标题测试文章的内容。",
+    "summary": "这是重复标题测试文章的摘要。",
+    "authorId": 1,
+    "status": "draft",
+    "visibility": "public",
+    "isFeatured": 0,
+    "pointThreshold": 0,
+    "resourceUrl": "http://res.example.com/file2.zip",
+    "downloadPointThreshold": 0,
+    "downloadFileUrl": "http://dl.example.com/file2.pdf"
+  }')
+
+echo "重复创建文章响应:"
+echo "$DUPLICATE_CREATE_RESPONSE" | jq '.' 2>/dev/null || echo "$DUPLICATE_CREATE_RESPONSE"
+
+# 检查是否返回了title唯一性错误
+if echo "$DUPLICATE_CREATE_RESPONSE" | grep -q "文章标题已存在"; then
+  echo "✓ Title唯一性检查正常工作"
+else
+  echo "⚠ Title唯一性检查可能存在问题"
+fi
+echo ""
+
 # 2. 获取所有文章
 echo "2. 获取所有文章..."
 GET_ALL_RESPONSE=$(curl -s "$BASE_URL$API_PREFIX/articles?current=1&pageSize=10")

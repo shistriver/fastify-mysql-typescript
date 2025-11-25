@@ -126,6 +126,14 @@ export class ArticleModel {
   }
 
   /**
+   * 检查文章标题是否已存在
+   */
+  static async isTitleExists(title: string): Promise<boolean> {
+    const [rows] = await pool.execute('SELECT article_id FROM articles WHERE title = ? LIMIT 1', [title]);
+    return (rows as any[]).length > 0;
+  }
+
+  /**
    * 创建新文章
    */
   static async create(articleData: CreateArticleDto): Promise<Article> {

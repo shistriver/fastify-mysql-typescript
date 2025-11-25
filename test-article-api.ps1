@@ -52,6 +52,41 @@ try {
     exit 1
 }
 
+# 1.1 测试title唯一性检查
+Write-Host "1.1 测试title唯一性检查..."
+$duplicateCreateData = @{
+    title = "测试文章标题"  # 使用相同的标题
+    subtitle = "重复标题测试文章"
+    coverImageUrl = "http://example.com/cover2.jpg"
+    content = "这是重复标题测试文章的内容。"
+    summary = "这是重复标题测试文章的摘要。"
+    authorId = 1
+    status = "draft"
+    visibility = "public"
+    isFeatured = 0
+    pointThreshold = 0
+    resourceUrl = "http://res.example.com/file2.zip"
+    downloadPointThreshold = 0
+    downloadFileUrl = "http://dl.example.com/file2.pdf"
+} | ConvertTo-Json
+
+try {
+    $duplicateCreateResponse = Invoke-RestMethod -Uri "$BASE_URL$API_PREFIX/articles" -Method POST -Body $duplicateCreateData -ContentType "application/json"
+    Write-Host "重复创建文章响应:"
+    $duplicateCreateResponse | ConvertTo-Json -Depth 10
+    Write-Host ""
+    Write-Host "⚠ Title唯一性检查可能存在问题`n" -ForegroundColor Yellow
+} catch {
+    if ($_.ErrorDetails.Message -match "文章标题已存在") {
+        Write-Host "重复创建文章响应:" 
+        Write-Host $_.ErrorDetails.Message
+        Write-Host "✓ Title唯一性检查正常工作`n" -ForegroundColor Green
+    } else {
+        Write-Host "重复创建文章失败: $($_.Exception.Message)" -ForegroundColor Red
+        Write-Host "响应内容: $($_.ErrorDetails.Message)`n" -ForegroundColor Red
+    }
+}
+
 # 2. 获取所有文章
 Write-Host "2. 获取所有文章..."
 try {
