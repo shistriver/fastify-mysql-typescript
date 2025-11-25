@@ -106,6 +106,22 @@ async function testArticleAPI() {
     });
     console.log('获取所有文章响应:', JSON.stringify(getAllResponse, null, 2), '\n');
 
+    // 2.1 根据标题过滤文章
+    console.log('2.1 根据标题过滤文章...');
+    const getByTitleResponse = await sendRequest({
+      path: '/articles?current=1&pageSize=10&title=测试',
+      method: 'GET'
+    });
+    console.log('根据标题过滤文章响应:', JSON.stringify(getByTitleResponse, null, 2), '\n');
+
+    // 2.2 根据状态过滤文章
+    console.log('2.2 根据状态过滤文章...');
+    const getByStatusFilterResponse = await sendRequest({
+      path: '/articles?current=1&pageSize=10&status=draft',
+      method: 'GET'
+    });
+    console.log('根据状态过滤文章响应:', JSON.stringify(getByStatusFilterResponse, null, 2), '\n');
+
     // 3. 根据ID获取文章
     console.log('3. 根据ID获取文章...');
     const getByIdResponse = await sendRequest({

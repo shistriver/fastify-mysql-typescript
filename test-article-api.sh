@@ -75,6 +75,20 @@ echo "获取所有文章响应:"
 echo "$GET_ALL_RESPONSE" | jq '.' 2>/dev/null || echo "$GET_ALL_RESPONSE"
 echo ""
 
+# 2.1 根据标题过滤文章
+echo "2.1 根据标题过滤文章..."
+GET_BY_TITLE_RESPONSE=$(curl -s "$BASE_URL$API_PREFIX/articles?current=1&pageSize=10&title=测试")
+echo "根据标题过滤文章响应:"
+echo "$GET_BY_TITLE_RESPONSE" | jq '.' 2>/dev/null || echo "$GET_BY_TITLE_RESPONSE"
+echo ""
+
+# 2.2 根据状态过滤文章
+echo "2.2 根据状态过滤文章..."
+GET_BY_STATUS_FILTER_RESPONSE=$(curl -s "$BASE_URL$API_PREFIX/articles?current=1&pageSize=10&status=draft")
+echo "根据状态过滤文章响应:"
+echo "$GET_BY_STATUS_FILTER_RESPONSE" | jq '.' 2>/dev/null || echo "$GET_BY_STATUS_FILTER_RESPONSE"
+echo ""
+
 # 3. 根据ID获取文章
 echo "3. 根据ID获取文章..."
 GET_BY_ID_RESPONSE=$(curl -s "$BASE_URL$API_PREFIX/articles/$ARTICLE_ID")

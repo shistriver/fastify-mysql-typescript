@@ -5,8 +5,40 @@ export class ArticleModel {
   /**
    * 获取所有文章
    */
-  static async findAll(page: number = 1, limit: number = 10): Promise<{ articles: Article[], total: number }> {
+  static async findAll(page: number = 1, limit: number = 10, filters: { 
+    title?: string; 
+    status?: string; 
+    visibility?: string; 
+    isFeatured?: string; 
+  } = {}): Promise<{ articles: Article[], total: number }> {
     const offset = (page - 1) * limit;
+    
+    // 构建WHERE条件
+    const whereConditions = [];
+    const whereValues = [];
+    
+    if (filters.title) {
+      whereConditions.push('title LIKE ?');
+      whereValues.push(`%${filters.title}%`);
+    }
+    
+    if (filters.status) {
+      whereConditions.push('status = ?');
+      whereValues.push(filters.status);
+    }
+    
+    if (filters.visibility) {
+      whereConditions.push('visibility = ?');
+      whereValues.push(filters.visibility);
+    }
+    
+    if (filters.isFeatured) {
+      whereConditions.push('is_featured = ?');
+      whereValues.push(filters.isFeatured);
+    }
+    
+    const whereClause = whereConditions.length > 0 ? `WHERE ${whereConditions.join(' AND ')}` : '';
+    
     // 使用字符串拼接而不是参数化查询来调试LIMIT和OFFSET问题
     const query = `SELECT 
       article_id as id, 
@@ -27,11 +59,12 @@ export class ArticleModel {
       updated_at as updatedAt, 
       resource_url as resourceUrl, 
       download_point_threshold as downloadPointThreshold 
-    FROM articles ORDER BY created_at DESC LIMIT ${limit} OFFSET ${offset}`;
+    FROM articles ${whereClause} ORDER BY created_at DESC LIMIT ${limit} OFFSET ${offset}`;
 
-    const [rows] = await pool.execute(query);
+    const [rows] = await pool.execute(query, whereValues);
     
-    const [totalResult] = await pool.execute('SELECT COUNT(*) as total FROM articles');
+    const countQuery = `SELECT COUNT(*) as total FROM articles ${whereClause}`;
+    const [totalResult] = await pool.execute(countQuery, whereValues);
     const total = (totalResult as any[])[0].total;
     
     // 处理时间字段，确保NULL值正确处理

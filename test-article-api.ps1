@@ -64,6 +64,30 @@ try {
     Write-Host "响应内容: $($_.ErrorDetails.Message)`n" -ForegroundColor Red
 }
 
+# 2.1 根据标题过滤文章
+Write-Host "2.1 根据标题过滤文章..."
+try {
+    $getByTitleResponse = Invoke-RestMethod -Uri "$BASE_URL$API_PREFIX/articles?current=1&pageSize=10&title=测试" -Method GET
+    Write-Host "根据标题过滤文章响应:"
+    $getByTitleResponse | ConvertTo-Json -Depth 10
+    Write-Host ""
+} catch {
+    Write-Host "根据标题过滤文章失败: $($_.Exception.Message)" -ForegroundColor Red
+    Write-Host "响应内容: $($_.ErrorDetails.Message)`n" -ForegroundColor Red
+}
+
+# 2.2 根据状态过滤文章
+Write-Host "2.2 根据状态过滤文章..."
+try {
+    $getByStatusFilterResponse = Invoke-RestMethod -Uri "$BASE_URL$API_PREFIX/articles?current=1&pageSize=10&status=draft" -Method GET
+    Write-Host "根据状态过滤文章响应:"
+    $getByStatusFilterResponse | ConvertTo-Json -Depth 10
+    Write-Host ""
+} catch {
+    Write-Host "根据状态过滤文章失败: $($_.Exception.Message)" -ForegroundColor Red
+    Write-Host "响应内容: $($_.ErrorDetails.Message)`n" -ForegroundColor Red
+}
+
 # 3. 根据ID获取文章
 Write-Host "3. 根据ID获取文章..."
 try {

@@ -13,8 +13,13 @@ export class ArticleService {
   /**
    * 获取所有文章
    */
-  async getAllArticles(page: number = 1, limit: number = 10): Promise<{ articles: ArticleResponse[], total: number }> {
-    const { articles, total } = await ArticleModel.findAll(page, limit);
+  async getAllArticles(page: number = 1, limit: number = 10, filters: { 
+    title?: string; 
+    status?: string; 
+    visibility?: string; 
+    isFeatured?: string; 
+  } = {}): Promise<{ articles: ArticleResponse[], total: number }> {
+    const { articles, total } = await ArticleModel.findAll(page, limit, filters);
     return {
       articles: articles.map(article => this.toArticleResponse(article)),
       total

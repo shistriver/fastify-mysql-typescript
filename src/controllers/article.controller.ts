@@ -20,11 +20,45 @@ export const createArticle = async (request: FastifyRequest<{ Body: CreateArticl
 };
 
 // 获取所有文章
-export const getAllArticles = async (request: FastifyRequest<{ Querystring: { current?: string; pageSize?: string } }>, reply: FastifyReply) => {
+export const getAllArticles = async (request: FastifyRequest<{ 
+  Querystring: { 
+    current?: string; 
+    pageSize?: string;
+    title?: string;
+    status?: string;
+    visibility?: string;
+    isFeatured?: string;
+  } 
+}>, reply: FastifyReply) => {
   try {
     const page = parseInt(request.query.current || '1');
     const limit = parseInt(request.query.pageSize || '10');
-    const result = await articleService.getAllArticles(page, limit);
+    
+    // 构建过滤条件
+    const filters: { 
+      title?: string; 
+      status?: string; 
+      visibility?: string; 
+      isFeatured?: string; 
+    } = {};
+    
+    if (request.query.title) {
+      filters.title = request.query.title;
+    }
+    
+    if (request.query.status) {
+      filters.status = request.query.status;
+    }
+    
+    if (request.query.visibility) {
+      filters.visibility = request.query.visibility;
+    }
+    
+    if (request.query.isFeatured) {
+      filters.isFeatured = request.query.isFeatured;
+    }
+    
+    const result = await articleService.getAllArticles(page, limit, filters);
     return reply.status(200).send({
       success: true,
       data: result.articles,
