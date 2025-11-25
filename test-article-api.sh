@@ -131,4 +131,56 @@ echo "删除文章响应:"
 echo "$DELETE_RESPONSE" | jq '.' 2>/dev/null || echo "$DELETE_RESPONSE"
 echo ""
 
+# 8. 批量删除文章测试
+echo "8. 批量删除文章测试..."
+# 先创建两个文章
+CREATE_RESPONSE1=$(curl -s -X POST "$BASE_URL$API_PREFIX/articles" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "title": "批量删除测试文章1",
+    "subtitle": "批量删除测试文章副标题1",
+    "coverImageUrl": "http://example.com/cover1.jpg",
+    "content": "这是第一篇批量删除测试文章的内容。",
+    "summary": "第一篇批量删除测试文章的摘要。",
+    "authorId": 1,
+    "status": "draft",
+    "visibility": "public",
+    "isFeatured": 0,
+    "pointThreshold": 0,
+    "resourceUrl": "http://res.example.com/file1.zip",
+    "downloadPointThreshold": 0,
+    "downloadFileUrl": "http://dl.example.com/file1.pdf"
+  }')
+
+CREATE_RESPONSE2=$(curl -s -X POST "$BASE_URL$API_PREFIX/articles" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "title": "批量删除测试文章2",
+    "subtitle": "批量删除测试文章副标题2",
+    "coverImageUrl": "http://example.com/cover2.jpg",
+    "content": "这是第二篇批量删除测试文章的内容。",
+    "summary": "第二篇批量删除测试文章的摘要。",
+    "authorId": 1,
+    "status": "draft",
+    "visibility": "public",
+    "isFeatured": 0,
+    "pointThreshold": 0,
+    "resourceUrl": "http://res.example.com/file2.zip",
+    "downloadPointThreshold": 0,
+    "downloadFileUrl": "http://dl.example.com/file2.pdf"
+  }')
+
+# 获取创建的文章ID
+ARTICLE_ID1=$(echo $CREATE_RESPONSE1 | grep -o '"id":[0-9]*' | grep -o '[0-9]*')
+ARTICLE_ID2=$(echo $CREATE_RESPONSE2 | grep -o '"id":[0-9]*' | grep -o '[0-9]*')
+
+# 批量删除文章
+BATCH_DELETE_RESPONSE=$(curl -s -X DELETE "$BASE_URL$API_PREFIX/articles" \
+  -H "Content-Type: application/json" \
+  -d "{\"ids\":[${ARTICLE_ID1},${ARTICLE_ID2}]}")
+
+echo "批量删除文章响应:"
+echo "$BATCH_DELETE_RESPONSE" | jq '.' 2>/dev/null || echo "$BATCH_DELETE_RESPONSE"
+echo ""
+
 echo "所有测试完成！"

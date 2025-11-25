@@ -39,7 +39,7 @@ export const getAllArticles = async (request: FastifyRequest<{
       title?: string; 
       status?: string; 
       visibility?: string; 
-      isFeatured?: string; 
+      isFeatured?: boolean; 
     } = {};
     
     if (request.query.title) {
@@ -54,8 +54,8 @@ export const getAllArticles = async (request: FastifyRequest<{
       filters.visibility = request.query.visibility;
     }
     
-    if (request.query.isFeatured) {
-      filters.isFeatured = request.query.isFeatured;
+    if (request.query.isFeatured !== undefined) {
+      filters.isFeatured = request.query.isFeatured === 'true';
     }
     
     const result = await articleService.getAllArticles(page, limit, filters);
@@ -189,6 +189,39 @@ export const getFeaturedArticles = async (request: FastifyRequest<{ Querystring:
     return reply.status(500).send({
       success: false,
       message: error.message || '获取推荐文章失败'
+    });
+  }
+};
+
+// 批量删除文章
+export const deleteArticles = async (request: FastifyRequest<{ Body: { ids: number[] } }>, reply: FastifyReply) => {
+  try {
+    const { ids } = request.body;
+    
+    if (!ids || !Array.isArray(ids) || ids.length === 0) {
+      return reply.status(400).send({
+        success: false,
+        message: '请提供要删除的文章ID数组'
+      });
+    }
+    
+    const result = await articleService.deleteArticles(ids);
+    
+    if (!result) {
+      return reply.status(500).send({
+        success: false,
+        message: '批量删除文章失败'
+      });
+    }
+    
+    return reply.status(200).send({
+      success: true,
+      message: `成功删除 ${ids.length} 篇文章`
+    });
+  } catch (error: any) {
+    return reply.status(500).send({
+      success: false,
+      message: error.message || '批量删除文章失败'
     });
   }
 };

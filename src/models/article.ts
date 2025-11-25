@@ -9,7 +9,7 @@ export class ArticleModel {
     title?: string; 
     status?: string; 
     visibility?: string; 
-    isFeatured?: string; 
+    isFeatured?: boolean; 
   } = {}): Promise<{ articles: Article[], total: number }> {
     const offset = (page - 1) * limit;
     
@@ -32,9 +32,9 @@ export class ArticleModel {
       whereValues.push(filters.visibility);
     }
     
-    if (filters.isFeatured) {
+    if (filters.isFeatured !== undefined) {
       whereConditions.push('is_featured = ?');
-      whereValues.push(filters.isFeatured);
+      whereValues.push(filters.isFeatured ? 1 : 0);
     }
     
     const whereClause = whereConditions.length > 0 ? `WHERE ${whereConditions.join(' AND ')}` : '';
@@ -265,6 +265,24 @@ export class ArticleModel {
    */
   static async delete(id: number): Promise<boolean> {
     const [result] = await pool.execute('DELETE FROM articles WHERE article_id = ?', [id]);
+    
+    // @ts-ignore
+    return result.affectedRows > 0;
+  }
+  
+  /**
+   * 批量删除文章
+   */
+  static async deleteBatch(ids: number[]): Promise<boolean> {
+    if (ids.length === 0) {
+      return false;
+    }
+    
+    // 构建占位符
+    const placeholders = ids.map(() => '?').join(',');
+    const query = `DELETE FROM articles WHERE article_id IN (${placeholders})`;
+    
+    const [result] = await pool.execute(query, ids);
     
     // @ts-ignore
     return result.affectedRows > 0;

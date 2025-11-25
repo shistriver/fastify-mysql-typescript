@@ -17,7 +17,7 @@ export class ArticleService {
     title?: string; 
     status?: string; 
     visibility?: string; 
-    isFeatured?: string; 
+    isFeatured?: boolean; 
   } = {}): Promise<{ articles: ArticleResponse[], total: number }> {
     const { articles, total } = await ArticleModel.findAll(page, limit, filters);
     return {
@@ -47,6 +47,13 @@ export class ArticleService {
    */
   async deleteArticle(id: number): Promise<boolean> {
     return await ArticleModel.delete(id);
+  }
+  
+  /**
+   * 批量删除文章
+   */
+  async deleteArticles(ids: number[]): Promise<boolean> {
+    return await ArticleModel.deleteBatch(ids);
   }
 
   /**

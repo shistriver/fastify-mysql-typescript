@@ -155,4 +155,62 @@ try {
     Write-Host "响应内容: $($_.ErrorDetails.Message)`n" -ForegroundColor Red
 }
 
+# 8. 批量删除文章测试
+Write-Host "8. 批量删除文章测试..."
+# 先创建两个文章
+try {
+    $createData1 = @{
+        title = "批量删除测试文章1"
+        subtitle = "批量删除测试文章副标题1"
+        coverImageUrl = "http://example.com/cover1.jpg"
+        content = "这是第一篇批量删除测试文章的内容。"
+        summary = "第一篇批量删除测试文章的摘要。"
+        authorId = 1
+        status = "draft"
+        visibility = "public"
+        isFeatured = 0
+        pointThreshold = 0
+        resourceUrl = "http://res.example.com/file1.zip"
+        downloadPointThreshold = 0
+        downloadFileUrl = "http://dl.example.com/file1.pdf"
+    } | ConvertTo-Json
+    
+    $createResponse1 = Invoke-RestMethod -Uri "$BASE_URL$API_PREFIX/articles" -Method POST -Body $createData1 -ContentType "application/json"
+    
+    $createData2 = @{
+        title = "批量删除测试文章2"
+        subtitle = "批量删除测试文章副标题2"
+        coverImageUrl = "http://example.com/cover2.jpg"
+        content = "这是第二篇批量删除测试文章的内容。"
+        summary = "第二篇批量删除测试文章的摘要。"
+        authorId = 1
+        status = "draft"
+        visibility = "public"
+        isFeatured = 0
+        pointThreshold = 0
+        resourceUrl = "http://res.example.com/file2.zip"
+        downloadPointThreshold = 0
+        downloadFileUrl = "http://dl.example.com/file2.pdf"
+    } | ConvertTo-Json
+    
+    $createResponse2 = Invoke-RestMethod -Uri "$BASE_URL$API_PREFIX/articles" -Method POST -Body $createData2 -ContentType "application/json"
+    
+    # 获取创建的文章ID
+    $articleId1 = $createResponse1.data.id
+    $articleId2 = $createResponse2.data.id
+    
+    # 批量删除文章
+    $batchDeleteData = @{
+        ids = @($articleId1, $articleId2)
+    } | ConvertTo-Json
+    
+    $batchDeleteResponse = Invoke-RestMethod -Uri "$BASE_URL$API_PREFIX/articles" -Method DELETE -Body $batchDeleteData -ContentType "application/json"
+    Write-Host "批量删除文章响应:"
+    $batchDeleteResponse | ConvertTo-Json -Depth 10
+    Write-Host ""
+} catch {
+    Write-Host "批量删除文章测试失败: $($_.Exception.Message)" -ForegroundColor Red
+    Write-Host "响应内容: $($_.ErrorDetails.Message)`n" -ForegroundColor Red
+}
+
 Write-Host "所有测试完成！"

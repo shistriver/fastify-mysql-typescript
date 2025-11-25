@@ -167,6 +167,61 @@ async function testArticleAPI() {
     });
     console.log('删除文章响应:', JSON.stringify(deleteResponse, null, 2), '\n');
 
+    // 8. 批量删除文章测试（创建两个文章然后批量删除）
+    console.log('8. 批量删除文章测试...');
+    // 先创建两个文章
+    const createResponse1 = await sendRequest({
+      path: '/articles',
+      method: 'POST'
+    }, {
+      title: '批量删除测试文章1',
+      subtitle: '批量删除测试文章副标题1',
+      coverImageUrl: 'http://example.com/cover1.jpg',
+      content: '这是第一篇批量删除测试文章的内容。',
+      summary: '第一篇批量删除测试文章的摘要。',
+      authorId: 1,
+      status: 'draft',
+      visibility: 'public',
+      isFeatured: 0,
+      pointThreshold: 0,
+      resourceUrl: 'http://res.example.com/file1.zip',
+      downloadPointThreshold: 0,
+      downloadFileUrl: 'http://dl.example.com/file1.pdf'
+    });
+    
+    const createResponse2 = await sendRequest({
+      path: '/articles',
+      method: 'POST'
+    }, {
+      title: '批量删除测试文章2',
+      subtitle: '批量删除测试文章副标题2',
+      coverImageUrl: 'http://example.com/cover2.jpg',
+      content: '这是第二篇批量删除测试文章的内容。',
+      summary: '第二篇批量删除测试文章的摘要。',
+      authorId: 1,
+      status: 'draft',
+      visibility: 'public',
+      isFeatured: 0,
+      pointThreshold: 0,
+      resourceUrl: 'http://res.example.com/file2.zip',
+      downloadPointThreshold: 0,
+      downloadFileUrl: 'http://dl.example.com/file2.pdf'
+    });
+    
+    // 获取创建的文章ID
+    const articleId1 = createResponse1.data?.data?.id || 1;
+    const articleId2 = createResponse2.data?.data?.id || 2;
+    
+    // 批量删除文章
+    const batchDeleteResponse = await sendRequest({
+      path: '/articles',
+      method: 'DELETE'
+    }, {
+      ids: [articleId1, articleId2]
+    });
+    
+    console.log('批量删除文章响应:', JSON.stringify(batchDeleteResponse, null, 2), '\n');
+
     console.log('所有测试完成！');
   } catch (error) {
     console.error('API调用错误:', error.message || error);

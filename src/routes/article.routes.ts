@@ -5,6 +5,7 @@ import {
   getArticleById,
   updateArticle,
   deleteArticle,
+  deleteArticles,
   getArticlesByStatus,
   getFeaturedArticles
 } from '../controllers/article.controller';
@@ -43,5 +44,10 @@ export async function articleRoutes(fastify: FastifyInstance) {
   // 获取推荐文章
   fastify.get('/articles/featured', {
     handler: getFeaturedArticles
+  });
+  
+  // 批量删除文章
+  fastify.delete('/articles', {
+    handler: deleteArticles
   });
 }
